@@ -1,4 +1,4 @@
-let hh, k, s, hPhrase, hPat, drums, scorep, arrOfSin, mic;
+let hh, k, s, hPhrase, hPat, drums, scorep, arrOfSin, mic, input1, button1, lexicon;
 
 function touchStarted() {
   if (getAudioContext().state !== 'running') {
@@ -11,7 +11,7 @@ function touchStarted() {
 function setup() {
   // CANVAS 
   cnv = createCanvas(700, 700)
-  playBtn = createButton("play", keyPressed())
+  playBtn = createButton("play", touchStarted())
   cnv.mousePressed(addIns)
 
 
@@ -23,7 +23,7 @@ function setup() {
 
 
 
-  // LOADING SOUNDS
+  // LOADINg SOUNDS
   hh = loadSound('/samples/hh.wav', () => {
     drums.loop()
   })
@@ -95,7 +95,7 @@ function setup() {
     o6.play(time)
   }, o6Pat)
 
-  // ADDING PHRASES
+  // ADDINg PHRASES
   drums = new p5.Part()
   drums.addPhrase(hPhrase)
   drums.addPhrase(sPhrase)
@@ -116,7 +116,21 @@ function setup() {
   drums.setBPM('60')
 
 
+
+
+  ////////////////////////
+
+
+  lexicon = new RiLexicon()
+  input1 = createInput("there was a blissy day");
+  button1 = createButton("submit");
+  //input1.changed(processRita)
+  button1.mousePressed(processRita)
+  input1.size(200)
+
 }
+
+
 
 
 
@@ -136,37 +150,38 @@ let x = 0.2
 //   });
 
 // }
-let perDist = [0,0,0,0,0,1]
+let perDist = [0, 0, 0, 0, 0, 1]
+
 function addIns() {
   let chosen = random(arrOfSin)
-   i = floor(random(perDist))
-  let ranC = random(255) 
-  
+  i = floor(random(perDist))
+  let ranC = random(255)
+
   if (mouseX < width / 2 && mouseY < height / 2) { // Left - Up -- Hh
-    fill(123,12,234)
-    ellipse(mouseX,mouseY,ranC,ranC)
+    fill(123, 12, 234)
+    ellipse(mouseX, mouseY, ranC, ranC)
     hPat.push(i)
     console.log(`h added ${hPat}`);
   } else if (mouseX > width / 2 && mouseY < height / 2) { // Right - Up -- Kick
-    fill(23,212,134)
-    ellipse(mouseX,mouseY,ranC,ranC)
+    fill(23, 212, 134)
+    ellipse(mouseX, mouseY, ranC, ranC)
     kPat.push(i)
     console.log(`k added ${kPat}`);
   } else if (mouseX < width / 2 && mouseY > height / 2) { // Left - Down - Snare
-    fill(223,12,134)
-    ellipse(mouseX,mouseY,ranC,ranC)
+    fill(223, 12, 134)
+    ellipse(mouseX, mouseY, ranC, ranC)
     sPat.push(i)
     console.log(`s added ${sPat}`);
-  } else if (mouseX > width / 2 && mouseY > height / 2) {// right - Down - synths
-    fill(223,222,34)
-    ellipse(mouseX,mouseY,ranC,ranC)
+  } else if (mouseX > width / 2 && mouseY > height / 2) { // right - Down - synths
+    fill(223, 222, 34)
+    ellipse(mouseX, mouseY, ranC, ranC)
     chosen.push(i)
     console.log(`sint added ${chosen}`);
   }
 }
 
 function keyPressed() {
-  if (key === " ") {
+  if (key === "º") {
     if (hh.isLoaded() && k.isLoaded() && s.isLoaded()) {
       if (!drums.isPlaying) {
         drums.loop()
@@ -179,18 +194,13 @@ function keyPressed() {
   }
 }
 
-
-
-
-
-
 let noiseScale = 0.02;
 
 function draw() {
 
   frameRate(17);
-  // Get the overall volume (between 0 and 1.0)
-  let vol = mic.getLevel() * 4;
+  // get the overall volume (between 0 and 1.0)
+  let vol = mic.getLevel() * 19;
   fill(0);
   noStroke();
   smooth()
@@ -199,7 +209,7 @@ function draw() {
   ellipse((width / 1.2) * vol, h - 25, vol * 400, vol * 400);
   drawPointy(100);
   drawPointy(10);
-   drawArc();
+  drawArc();
   background(vol * 30, 7);
 
   function drawPointy(weigh) {
@@ -218,3 +228,64 @@ function draw() {
     arc(vol * 444, vol * 444, vol * 444, vol * 444, PI + QUARTER_PI, TWO_PI);
   }
 }
+
+
+
+function processRita() {
+  let s = input1.value()
+  let rs = new RiString(s)
+  let words = rs.words()
+  let pos = rs.pos()
+
+  let result = ' '
+  for (let i = 0; i < words.length; i++) {
+    let word = words[i]
+    if (/nn.*/.test(pos[i])) {
+      word = lexicon.randomWord(pos[i])
+      if (word === 'chevrolet') {
+        word = random(nouns)
+      }
+    }
+    result += word
+    result += '  '
+  }
+  createP(result)
+}
+
+
+let nouns = ['actor', 'gold', 'Painting', 'advertisement', 'grass', 'Parrot', 'afternoon', 'greece', 'Pencil', 'airport', 'guitar', 'Piano', 'ambulance', 'Hair', 'Pillow', 'animal', 'Hamburger', 'Pizza', 'answer', 'Helicopter', 'Planet', 'apple', 'Helmet', 'Plastic', 'army', 'Holiday', 'Portugal', 'australia', 'Honey', 'Potato', 'Balloon', 'Horse', 'Queen', 'Banana', 'Hospital', 'Quill', 'Battery', 'House', 'Rain', 'Beach', 'Hydrogen', 'Rainbow', 'Beard', 'Ice', 'Raincoat', 'Bed', 'Insect', 'Refrigerator', 'Belgium', 'Insurance', 'Restaurant', 'Boy', 'Iron', 'River', 'Branch', 'Island', 'Rocket', 'Breakfast', 'Jackal', 'Room', 'Brother', 'Jelly', 'Rose', 'Camera', 'Jewellery', 'Russia', 'Candle', 'Jordan', 'Sandwich', 'Car', 'Juice', 'School', 'Caravan', 'Kangaroo', 'Scooter', 'Carpet', 'King', 'Shampoo', 'Cartoon', 'Kitchen', 'Shoe', 'China', 'Kite', 'Soccer', 'Church', 'Knife', 'Spoon', 'Crayon', 'Lamp', 'Stone', 'Crowd', 'Lawyer', 'Sugar', 'Daughter', 'Leather', 'Sweden', 'Death', 'Library', 'Teacher', 'Denmark', 'Lighter', 'Telephone', 'Diamond', 'Lion', 'Television', 'Dinner', 'Lizard', 'Tent', 'Disease', 'Lock', 'Thailand', 'Doctor', 'London', 'Tomato', 'Dog', 'Lunch', 'Toothbrush', 'Dream', 'Machine', 'Traffic', 'Dress', 'Magazine', 'Train', 'Easter', 'Magician', 'Truck', 'Egg', 'Manchester', 'Uganda', 'Eggplant', 'Market', 'Umbrella', 'Egypt', 'Match', 'Van', 'Elephant', 'Microphone', 'Vase', 'Energy', 'Monkey', 'Vegetable', 'Engine', 'Morning', 'Vulture', 'England', 'Motorcycle', 'Wall', 'Evening', 'Nail', 'Whale', 'Eye', 'Napkin', 'Window', 'Family', 'Needle', 'Wire', 'Finland', 'Nest', 'Xylophone', 'Fish', 'Nigeria', 'Yacht', 'Flag', 'Night', 'Yak', 'Flower', 'Notebook', 'Zebra', 'Football', 'Ocean', 'Zoo', 'Forest', 'Oil', 'garden', 'Fountain', 'Orange', 'gas', 'France', 'Oxygen', 'girl', 'Furniture', 'Oyster', 'glass', 'garage', 'ghost']
+
+
+let lon, lat, articleRaw, news, poem = ''
+
+let mainInfo = document.getElementById('mainInfo')
+
+
+
+const getArticle = async () => {
+  
+  articleRaw = `http://poetrydb.org//author/emerson`
+  const response = await fetch(articleRaw);
+  const article1 = await response.json();
+  let lines = random(article1).lines
+  lines.forEach(x => poem += x )
+  let rs = new RiString(poem)
+  let words = rs.words()
+  let pos = rs.pos()
+
+  let result = ' '
+  for (let i = 0; i < words.length; i++) {
+    let word = words[i]
+    if (/nn.*/.test(pos[i])) {
+      word = lexicon.randomWord(pos[i])
+      if (word === 'chevrolet') {
+        word = random(nouns)
+      }
+    }
+    result += word
+    result += '  '
+  }
+  let parr = createP(result)
+  parr.id('parr')
+};
+getArticle()

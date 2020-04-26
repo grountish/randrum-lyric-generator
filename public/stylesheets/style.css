@@ -13,3 +13,9 @@ body {
   color: white; }
 
 /*# sourceMappingURL=style.css.map */
+#parr {
+  width:50%;
+  margin: 0 auto;
+  text-align: center;
+  padding: 30px;
+}
