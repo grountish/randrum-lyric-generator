@@ -300,7 +300,7 @@ function recordSong() {
     state++;
   }
   else if (state === 1) {
-    background(30,155,0);
+    background(30,155,0); // Change 4 better colors
     recorder.stop();
     state++;
   }
@@ -309,5 +309,6 @@ function recordSong() {
     //soundFile.play(); // play the result! // TRY FETCH TO SERVER OR TO CLOUDINARY!
     save(soundFile, 'mySong.wav');
     state++;
+
   }
 }
