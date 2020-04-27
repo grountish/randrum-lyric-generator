@@ -1,19 +1,27 @@
-let hh, k, s, hPhrase, hPat, drums, scorep, arrOfSin, mic, input1, button1, lexicon;
+let hh, k, s, hPhrase, hPat, drums, scorep, arrOfSin, mic, input1, button1, lexicon, speakButton,recordButton;
+let state = 0;
+let nouns = ['actor', 'gold', 'Painting', 'advertisement', 'grass', 'Parrot', 'afternoon', 'greece', 'Pencil', 'airport', 'guitar', 'Piano', 'ambulance', 'Hair', 'Pillow', 'animal', 'Hamburger', 'Pizza', 'answer', 'Helicopter', 'Planet', 'apple', 'Helmet', 'Plastic', 'army', 'Holiday', 'Portugal', 'australia', 'Honey', 'Potato', 'Balloon', 'Horse', 'Queen', 'Banana', 'Hospital', 'Quill', 'Battery', 'House', 'Rain', 'Beach', 'Hydrogen', 'Rainbow', 'Beard', 'Ice', 'Raincoat', 'Bed', 'Insect', 'Refrigerator', 'Belgium', 'Insurance', 'Restaurant', 'Boy', 'Iron', 'River', 'Branch', 'Island', 'Rocket', 'Breakfast', 'Jackal', 'Room', 'Brother', 'Jelly', 'Rose', 'Camera', 'Jewellery', 'Russia', 'Candle', 'Jordan', 'Sandwich', 'Car', 'Juice', 'School', 'Caravan', 'Kangaroo', 'Scooter', 'Carpet', 'King', 'Shampoo', 'Cartoon', 'Kitchen', 'Shoe', 'China', 'Kite', 'Soccer', 'Church', 'Knife', 'Spoon', 'Crayon', 'Lamp', 'Stone', 'Crowd', 'Lawyer', 'Sugar', 'Daughter', 'Leather', 'Sweden', 'Death', 'Library', 'Teacher', 'Denmark', 'Lighter', 'Telephone', 'Diamond', 'Lion', 'Television', 'Dinner', 'Lizard', 'Tent', 'Disease', 'Lock', 'Thailand', 'Doctor', 'London', 'Tomato', 'Dog', 'Lunch', 'Toothbrush', 'Dream', 'Machine', 'Traffic', 'Dress', 'Magazine', 'Train', 'Easter', 'Magician', 'Truck', 'Egg', 'Manchester', 'Uganda', 'Eggplant', 'Market', 'Umbrella', 'Egypt', 'Match', 'Van', 'Elephant', 'Microphone', 'Vase', 'Energy', 'Monkey', 'Vegetable', 'Engine', 'Morning', 'Vulture', 'England', 'Motorcycle', 'Wall', 'Evening', 'Nail', 'Whale', 'Eye', 'Napkin', 'Window', 'Family', 'Needle', 'Wire', 'Finland', 'Nest', 'Xylophone', 'Fish', 'Nigeria', 'Yacht', 'Flag', 'Night', 'Yak', 'Flower', 'Notebook', 'Zebra', 'Football', 'Ocean', 'Zoo', 'Forest', 'Oil', 'garden', 'Fountain', 'Orange', 'gas', 'France', 'Oxygen', 'girl', 'Furniture', 'Oyster', 'glass', 'garage', 'ghost']
+let poem = ''
+
+let wordsSeparated = []
+let mainInfo = document.getElementById('mainInfo')
+let myVoice = new p5.Speech()
+let x = 0.2
+let perDist = [0, 0, 0, 0, 0, 1]
+let noiseScale = 0.02;
+
+let inx = 0;
 
 function touchStarted() {
-  if (getAudioContext().state !== 'running') {
-    getAudioContext().resume();
-  }
+  userStartAudio()
 }
-
-
 
 function setup() {
   // CANVAS 
+  getAudioContext().suspend()
   cnv = createCanvas(700, 700)
-  playBtn = createButton("play", touchStarted())
+  //playBtn = createButton("play", touchStarted)
   cnv.mousePressed(addIns)
-
 
   mic = new p5.AudioIn();
 
@@ -21,9 +29,28 @@ function setup() {
   // By default, it does not .connect() (to the computer speakers)
   mic.start();
 
+  ///  speach button
 
+  speakButton = createButton('speak')
+  speakButton.mousePressed(speakWords)
+
+  //
+
+  let getArticleBtn = createButton('get data')
+  getArticleBtn.mousePressed(getArticle)
+
+  //record Setup
+
+
+
+  recordButton = createButton('record')
+  recordButton.mousePressed(recordSong)
+  recorder = new p5.SoundRecorder();
+  recorder.setInput(mic);
+  soundFile = new p5.SoundFile();
 
   // LOADINg SOUNDS
+
   hh = loadSound('/samples/hh.wav', () => {
     drums.loop()
   })
@@ -56,7 +83,7 @@ function setup() {
 
   hPat = [1, 0, 1, 0]
   kPat = [1, 0, 1, 0]
-  sPat = [0, 1, 0, 0]
+  sPat = [0, 0, 0, 1]
   o1Pat = [0, 0, 0, 0]
   o2Pat = [0, 0, 0, 0]
   o3Pat = [0, 0, 0, 0]
@@ -108,6 +135,7 @@ function setup() {
   drums.addPhrase(o6Phrase)
 
   // SET BPM
+
   bpmCtr = createSlider(30, 140, 60, 1)
   bpmCtr.position(10, 20)
   bpmCtr.input(() => {
@@ -115,42 +143,16 @@ function setup() {
   })
   drums.setBPM('60')
 
-
-
-
   ////////////////////////
 
 
   lexicon = new RiLexicon()
   input1 = createInput("there was a blissy day");
   button1 = createButton("submit");
-  //input1.changed(processRita)
   button1.mousePressed(processRita)
   input1.size(200)
 
 }
-
-
-
-
-
-let x = 0.2
-
-// function draw() {
-//   background(220, 3);
-//   for (let i = 0; i < hPat.length; i++) {
-//     if (hPat[i] === 1) {
-//       ellipse(i + 1 + x, i + 2 + x, 10, 10)
-//       x += 0.2
-//     }
-//   }
-//   kPat.forEach(kick => {
-//     fill(0)
-//     ellipse(random(width), random(height), 3, 3)
-//   });
-
-// }
-let perDist = [0, 0, 0, 0, 0, 1]
 
 function addIns() {
   let chosen = random(arrOfSin)
@@ -180,27 +182,25 @@ function addIns() {
   }
 }
 
-function keyPressed() {
-  if (key === "º") {
-    if (hh.isLoaded() && k.isLoaded() && s.isLoaded()) {
-      if (!drums.isPlaying) {
-        drums.loop()
-      } else {
-        drums.pause()
-      }
-    }
-  } else {
-    console.log("be patient");
-  }
-}
-
-let noiseScale = 0.02;
+// function keyPressed() {
+//   if (key === "º") {
+//     if (hh.isLoaded() && k.isLoaded() && s.isLoaded()) {
+//       if (!drums.isPlaying) {
+//         drums.loop()
+//       } else {
+//         drums.pause()
+//       }
+//     }
+//   } else {
+//     console.log("be patient");
+//   }
+// }
 
 function draw() {
 
   frameRate(17);
   // get the overall volume (between 0 and 1.0)
-  let vol = mic.getLevel() * 19;
+  let vol = mic.getLevel() * 25;
   fill(0);
   noStroke();
   smooth()
@@ -229,8 +229,6 @@ function draw() {
   }
 }
 
-
-
 function processRita() {
   let s = input1.value()
   let rs = new RiString(s)
@@ -252,23 +250,13 @@ function processRita() {
   createP(result)
 }
 
-
-let nouns = ['actor', 'gold', 'Painting', 'advertisement', 'grass', 'Parrot', 'afternoon', 'greece', 'Pencil', 'airport', 'guitar', 'Piano', 'ambulance', 'Hair', 'Pillow', 'animal', 'Hamburger', 'Pizza', 'answer', 'Helicopter', 'Planet', 'apple', 'Helmet', 'Plastic', 'army', 'Holiday', 'Portugal', 'australia', 'Honey', 'Potato', 'Balloon', 'Horse', 'Queen', 'Banana', 'Hospital', 'Quill', 'Battery', 'House', 'Rain', 'Beach', 'Hydrogen', 'Rainbow', 'Beard', 'Ice', 'Raincoat', 'Bed', 'Insect', 'Refrigerator', 'Belgium', 'Insurance', 'Restaurant', 'Boy', 'Iron', 'River', 'Branch', 'Island', 'Rocket', 'Breakfast', 'Jackal', 'Room', 'Brother', 'Jelly', 'Rose', 'Camera', 'Jewellery', 'Russia', 'Candle', 'Jordan', 'Sandwich', 'Car', 'Juice', 'School', 'Caravan', 'Kangaroo', 'Scooter', 'Carpet', 'King', 'Shampoo', 'Cartoon', 'Kitchen', 'Shoe', 'China', 'Kite', 'Soccer', 'Church', 'Knife', 'Spoon', 'Crayon', 'Lamp', 'Stone', 'Crowd', 'Lawyer', 'Sugar', 'Daughter', 'Leather', 'Sweden', 'Death', 'Library', 'Teacher', 'Denmark', 'Lighter', 'Telephone', 'Diamond', 'Lion', 'Television', 'Dinner', 'Lizard', 'Tent', 'Disease', 'Lock', 'Thailand', 'Doctor', 'London', 'Tomato', 'Dog', 'Lunch', 'Toothbrush', 'Dream', 'Machine', 'Traffic', 'Dress', 'Magazine', 'Train', 'Easter', 'Magician', 'Truck', 'Egg', 'Manchester', 'Uganda', 'Eggplant', 'Market', 'Umbrella', 'Egypt', 'Match', 'Van', 'Elephant', 'Microphone', 'Vase', 'Energy', 'Monkey', 'Vegetable', 'Engine', 'Morning', 'Vulture', 'England', 'Motorcycle', 'Wall', 'Evening', 'Nail', 'Whale', 'Eye', 'Napkin', 'Window', 'Family', 'Needle', 'Wire', 'Finland', 'Nest', 'Xylophone', 'Fish', 'Nigeria', 'Yacht', 'Flag', 'Night', 'Yak', 'Flower', 'Notebook', 'Zebra', 'Football', 'Ocean', 'Zoo', 'Forest', 'Oil', 'garden', 'Fountain', 'Orange', 'gas', 'France', 'Oxygen', 'girl', 'Furniture', 'Oyster', 'glass', 'garage', 'ghost']
-
-
-let lon, lat, articleRaw, news, poem = ''
-
-let mainInfo = document.getElementById('mainInfo')
-
-
-
 const getArticle = async () => {
-  
+
   articleRaw = `http://poetrydb.org//author/emerson`
   const response = await fetch(articleRaw);
   const article1 = await response.json();
   let lines = random(article1).lines
-  lines.forEach(x => poem += x )
+  lines.forEach(x => poem += x)
   let rs = new RiString(poem)
   let words = rs.words()
   let pos = rs.pos()
@@ -287,5 +275,39 @@ const getArticle = async () => {
   }
   let parr = createP(result)
   parr.id('parr')
+
+  wordsSeparated = RiTa.tokenize(result)
+  console.log(wordsSeparated)
+
 };
-getArticle()
+
+function speakWords() {
+
+  myVoice.setVoice('Zarvox');
+  setInterval(() => {
+    myVoice.speak(wordsSeparated[inx]);
+    inx = (inx + 1) % wordsSeparated.length; // increment
+  }, 1000);
+
+}
+
+function recordSong() {
+
+  if (state === 0 && mic.enabled) {
+    recorder.record(soundFile);
+    background(190,0,40);
+    text('Recording!', width/2, height/2);
+    state++;
+  }
+  else if (state === 1) {
+    background(30,155,0);
+    recorder.stop();
+    state++;
+  }
+
+  else if (state === 2) {
+    //soundFile.play(); // play the result! // TRY FETCH TO SERVER OR TO CLOUDINARY!
+    save(soundFile, 'mySong.wav');
+    state++;
+  }
+}
