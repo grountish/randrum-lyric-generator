@@ -9,7 +9,6 @@ let myVoice = new p5.Speech()
 let x = 0.2
 let perDist = [0, 0, 0, 0, 0, 1]
 let noiseScale = 0.02;
-
 let inx = 0;
 
 function touchStarted() {
@@ -17,38 +16,33 @@ function touchStarted() {
 }
 
 function setup() {
-  // CANVAS 
+
   getAudioContext().suspend()
+  
+  // CANVAS 
   cnv = createCanvas(700, 700)
-  //playBtn = createButton("play", touchStarted)
   cnv.mousePressed(addIns)
-
+  cnv.parent('#ccc')
+  // MIC SETUP
   mic = new p5.AudioIn();
-
-  // start the Audio Input.
-  // By default, it does not .connect() (to the computer speakers)
   mic.start();
 
   ///  speach button
-
   speakButton = createButton('speak')
   speakButton.mousePressed(speakWords)
-
-  //
-
+  speakButton.parent('#bcc')
+  // get data buton
   let getArticleBtn = createButton('get data')
   getArticleBtn.mousePressed(getArticle)
-
+  getArticleBtn.parent('#bcc')
   //record Setup
-
-
 
   recordButton = createButton('record')
   recordButton.mousePressed(recordSong)
   recorder = new p5.SoundRecorder();
   recorder.setInput(mic);
   soundFile = new p5.SoundFile();
-
+  recordButton.parent('#bcc')
   // LOADINg SOUNDS
 
   hh = loadSound('/samples/hh.wav', () => {
@@ -137,12 +131,12 @@ function setup() {
   // SET BPM
 
   bpmCtr = createSlider(30, 140, 60, 1)
-  bpmCtr.position(10, 20)
   bpmCtr.input(() => {
     drums.setBPM(bpmCtr.value())
   })
   drums.setBPM('60')
 
+  bpmCtr.parent('#bcc')
   ////////////////////////
 
 
@@ -152,6 +146,8 @@ function setup() {
   button1.mousePressed(processRita)
   input1.size(200)
 
+  input1.parent('#bcc')
+  button1.parent('#bcc')
 }
 
 function addIns() {
@@ -182,19 +178,17 @@ function addIns() {
   }
 }
 
-// function keyPressed() {
-//   if (key === "º") {
-//     if (hh.isLoaded() && k.isLoaded() && s.isLoaded()) {
-//       if (!drums.isPlaying) {
-//         drums.loop()
-//       } else {
-//         drums.pause()
-//       }
-//     }
-//   } else {
-//     console.log("be patient");
-//   }
-// }
+function keyPressed() {
+  if (key === "º") {
+    if (hh.isLoaded() && k.isLoaded() && s.isLoaded()) {
+      if (!drums.isPlaying) {
+        drums.loop()
+      } else {
+        drums.pause()
+      }
+    }
+  } 
+}
 
 function draw() {
 
@@ -251,7 +245,7 @@ function processRita() {
 }
 
 const getArticle = async () => {
-
+  poem = ''
   articleRaw = `http://poetrydb.org//author/emerson`
   const response = await fetch(articleRaw);
   const article1 = await response.json();

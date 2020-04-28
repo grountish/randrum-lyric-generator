@@ -3,15 +3,34 @@ body {
   box-sizing: border-box;
   font: 19px Helvetica, Arial, sans-serif;
 }
-#main-section-sketch{
-  height: 70vh;
+
+
+.drum-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 30px;
 }
 
 
-#centered-sketch:hover{
-  transition: 0.3s;
-  }
-#centered-sketch:hover{
-color: white;
+#parr{
+  width: 80%;
+  margin: 0 auto;
+  text-align: justify;
+  padding: 30px;
 }
 
+#bcc{
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+}
+
+button, input {
+  margin: 15px;
+  padding: 10px auto;
+  border-radius: 5%;
+}
+button:hover, input:hover{
+  background-color: lightblue;
+}
